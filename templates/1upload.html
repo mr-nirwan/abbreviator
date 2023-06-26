@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <title>File Upload</title>
+    <style>
+        /* Add your custom styles here */
+        .progress { 
+            position: relative; 
+            width: 100%; 
+            border: 1px solid #ddd; 
+            padding: 1px; 
+            border-radius: 3px; 
+        } 
+        .bar { 
+            background-color: #B4F5B4; 
+            width:0%; 
+            height: 30px; 
+            border-radius: 3px; 
+        } 
+        .percent { 
+            position: absolute; 
+            display: inline-block; 
+            top: 3px; 
+            left: 48%; 
+        } 
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Upload The Document and Get the Abbreviation List</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload the document:</label><br>
+        <input type="file" id="file" name="file"><br>
+        <input type="submit" value="Upload">
+    </form>
+    <div class="progress">
+        <div class="bar"></div>
+        <div class="percent">0%</div>
+    </div>
+
+    <script>
+        const socket = io();
+        const form = document.getElementById('uploadForm');
+        const bar = document.querySelector('.bar');
+        const percent = document.querySelector('.percent');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            }).then(response => {
+                if (response.ok) {
+                    form.reset();
+                } else {
+                    throw new Error('Upload failed');
+                }
+            });
+        });
+
+        socket.on('progress', (data) => {
+            var progress = parseInt(data.percentage, 10);
+            bar.style.width = progress + '%';
+            percent.innerHTML = progress + '%';
+        });
+
+        socket.on('done', () => {
+            window.location.href = '/result';
+        });
+
+        socket.on('error', (data) => {
+            alert('An error occurred: ' + data.error_message);
+        });
+    </script>
+</body>
+</html>

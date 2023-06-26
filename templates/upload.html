@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+    <title>File Upload</title>
+    <style>
+				body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			background-color: #f8f8f8;
+		}
+
+		h1 {
+			text-align: center;
+		}
+
+		form {
+			text-align: center;
+		}
+
+		input[type="file"] {
+			margin-top: 10px;
+		}
+
+		input[type="submit"] {
+			margin-top: 10px;
+			padding: 10px 20px;
+			background-color: #3498db;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.progress-bar-container {
+			width: 200px;
+			height: 20px;
+			background-color: #f3f3f3;
+			border-radius: 10px;
+			display: none; /* Initially hidden */
+			margin-top: 20px;
+		}
+
+		.progress-bar {
+			height: 100%;
+			border-radius: 10px;
+			animation: progress 2s linear infinite;
+			background: repeating-linear-gradient(-75deg, #3498db, #3498db 10px, #f3f3f3 10px, #f3f3f3 20px);
+			background-size: 20px 100%;
+		}
+
+		@keyframes progress {
+			0% { background-position: 0 0; }
+			100% { background-position: 20px 0; }
+		}
+
+		h2 {
+			text-align: center;
+		}
+
+		textarea {
+			margin-top: 10px;
+			resize: none;
+		}
+
+		a {
+			display: block;
+			text-align: center;
+			margin-top: 10px;
+			padding: 10px 20px;
+			background-color: #3498db;
+			color: #fff;
+			text-decoration: none;
+			border-radius: 5px;
+		}
+
+		a:hover {
+			background-color: #2980b9;
+		}
+
+			
+    </style>
+    <!-- Adding Socket.IO script -->
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJRjic8vhF//HR0A4ez" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Upload The Document and Get the Abbreviation List</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload the document:</label><br>
+        <input type="file" id="file" name="file"><br>
+        <input type="submit" value="Upload">
+    </form>
+    <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar"></div>
+    </div>
+    {% if results %}
+        <h2>Abbreviation List Created:</h2>
+        <textarea rows="10" cols="30">{{ results }}</textarea><br>
+        <a href="/download">Download File</a>
+    {% endif %}
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            document.getElementById('progressBarContainer').style.display = 'block'; // Show the progress bar
+        });
+
+        // Socket.IO code
+        var socket = io.connect('http://localhost:5000');  // Your Flask server URL
+        socket.on('error', function(data) {
+            // Handle the error, e.g., show an alert with the error message
+            alert(data.error_message);
+            // Hide the progress bar
+            document.getElementById('progressBarContainer').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

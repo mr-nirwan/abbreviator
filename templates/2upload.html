@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <title>File Upload</title>
+    <style>
+        /* Spinner CSS */
+        .spinner {
+            display: none;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Align, Color and Gradient CSS */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            color: white;
+            background: linear-gradient(175deg, darkblue, red);
+            font-weight: normal;
+            padding-top: 100px;
+        }
+
+        h1, h2 {
+            font-weight: bold;
+        }
+
+        input[type="submit"], a {
+            background-color: lightgreen;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover, a:hover {
+            background-color: darkgreen;
+            color: white;
+        }
+    </style>
+    <!-- Adding Socket.IO script -->
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJRjic8vhF//HR0A4ez" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Upload The Document and Get the Abbreviation List</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload the document:</label><br>
+        <input type="file" id="file" name="file"><br>
+        <input type="submit" value="Upload">
+    </form>
+    <div class="spinner" id="spinner"></div>
+    {% if results %}
+        <h2>Abbreviation List Created:</h2>
+        <textarea rows="10" cols="30">{{ results }}</textarea><br>
+        <a href="/download">Download File</a>
+    {% endif %}
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            document.getElementById('spinner').style.display = 'block';
+        });
+
+        // Socket.IO code
+        var socket = io.connect('http://localhost:5000');  // Your Flask server URL
+        socket.on('error', function(data) {
+            // Handle the error, e.g., show an alert with the error message
+            alert(data.error_message);
+            // Hide the spinner
+            document.getElementById('spinner').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

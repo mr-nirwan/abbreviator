@@ -1,0 +1,8 @@
+Flask
+Werkzeug
+openai
+python-docx
+docx2txt
+flask-socketio
+Werkzeug
+tenacity
